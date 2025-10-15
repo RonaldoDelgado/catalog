@@ -26,7 +26,8 @@
     "db:test": "node scripts/test-db-connection.js",
     "db:seed": "node scripts/seed-database.js",
     "db:seed-settings": "node scripts/seed-catalog-settings.js",
-    "debug:build": "node scripts/debug-build.js"
+    "debug:build": "node scripts/debug-build.js",
+    "start:prod:build": "node scripts/start-with-build.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
