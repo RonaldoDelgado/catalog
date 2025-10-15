@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "src/components/catalog/ProductCatalog_backup.tsx",
+      "src/components/common/QRScanner_old.tsx",
     ],
   },
 ];

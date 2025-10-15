@@ -23,5 +23,9 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/components/catalog/ProductCatalog_backup.tsx",
+    "src/components/common/QRScanner_old.tsx"
+  ]
 }
