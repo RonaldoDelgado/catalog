@@ -13,7 +13,7 @@ export const getDatabaseConfig = (
       url: databaseUrl,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-      synchronize: configService.get<string>('NODE_ENV') === 'development',
+      synchronize: true, // Temporarily enable for Railway deployment
       logging: configService.get<string>('NODE_ENV') === 'development',
       ssl:
         configService.get<string>('NODE_ENV') === 'production'
@@ -32,7 +32,7 @@ export const getDatabaseConfig = (
     database: configService.get<string>('DATABASE_NAME') || 'catalog',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-    synchronize: configService.get<string>('NODE_ENV') === 'development',
+    synchronize: true, // Temporarily enable for Railway deployment
     logging: configService.get<string>('NODE_ENV') === 'development',
     ssl:
       configService.get<string>('NODE_ENV') === 'production'
