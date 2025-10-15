@@ -28,11 +28,11 @@
     "db:seed-settings": "node scripts/seed-catalog-settings.js"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^3.2.3",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/typeorm": "^10.0.1",
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/config": "^3.3.0",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/typeorm": "^10.0.2",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
