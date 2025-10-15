@@ -17,6 +17,9 @@ import {
   getProductPrice 
 } from '@/services/api';
 
+// Get the API base URL for logging
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+
 export interface UseApiState {
   products: Product[];
   listPrices: ListPrice[];
@@ -43,6 +46,7 @@ export function useApi() {
   // Load initial data
   const loadData = async () => {
     try {
+      console.log('🔄 Loading data from API...', API_BASE_URL);
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       
       const [products, listPrices, priceXLists, catalogSettings, catalogVisibility] = await Promise.all([
@@ -52,6 +56,14 @@ export function useApi() {
         apiClient.getCatalogSettings(),
         apiClient.getCatalogVisibility(),
       ]);
+      
+      console.log('✅ Data loaded successfully:', { 
+        products: products.length, 
+        listPrices: listPrices.length,
+        priceXLists: priceXLists.length,
+        catalogSettings: catalogSettings.length,
+        catalogVisibility 
+      });
 
 
       const activeListPrice = getActiveListPrice(listPrices);
