@@ -43,3 +43,21 @@ if (fs.existsSync(packageJsonPath)) {
 } else {
   console.log('❌ package.json does not exist');
 }
+
+// Check src directory
+const srcPath = path.join(process.cwd(), 'src');
+if (fs.existsSync(srcPath)) {
+  console.log('✅ src directory exists');
+  const srcContents = fs.readdirSync(srcPath);
+  console.log('📋 src contents:', srcContents.slice(0, 10)); // Show first 10 items
+} else {
+  console.log('❌ src directory does not exist');
+}
+
+// Check if nest-cli.json exists
+const nestCliPath = path.join(process.cwd(), 'nest-cli.json');
+if (fs.existsSync(nestCliPath)) {
+  console.log('✅ nest-cli.json exists');
+} else {
+  console.log('❌ nest-cli.json does not exist');
+}

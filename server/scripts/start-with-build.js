@@ -27,8 +27,10 @@ async function startWithBuild() {
     await execPromise('npm run debug:build');
     
     console.log('🚀 Starting production server...');
-    // Start the application
-    require('../dist/main.js');
+    // Start the application with absolute path
+    const mainPath = path.join(__dirname, '..', 'dist', 'main.js');
+    console.log('📍 Looking for main.js at:', mainPath);
+    require(mainPath);
     
   } catch (error) {
     console.error('❌ Error during startup:', error.message);
@@ -38,7 +40,9 @@ async function startWithBuild() {
     try {
       await execPromise('npm run build');
       console.log('✅ Retry build completed');
-      require('../dist/main.js');
+      const mainPath = path.join(__dirname, '..', 'dist', 'main.js');
+      console.log('📍 Retry: Looking for main.js at:', mainPath);
+      require(mainPath);
     } catch (retryError) {
       console.error('❌ Retry failed:', retryError.message);
       process.exit(1);
