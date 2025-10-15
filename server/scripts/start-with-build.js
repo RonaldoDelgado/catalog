@@ -16,15 +16,48 @@ async function startWithBuild() {
     
     if (!fs.existsSync(mainJsPath)) {
       console.log('📦 Building application...');
-      await execPromise('npm run build');
-      console.log('✅ Build completed');
+      try {
+        const buildOutput = await execPromise('npm run build');
+        console.log('✅ Build completed');
+        console.log('Build stdout:', buildOutput.stdout);
+        if (buildOutput.stderr) {
+          console.log('Build stderr:', buildOutput.stderr);
+        }
+      } catch (buildError) {
+        console.error('❌ Build failed:', buildError.message);
+        if (buildError.stdout) console.log('Build stdout:', buildError.stdout);
+        if (buildError.stderr) console.log('Build stderr:', buildError.stderr);
+        throw buildError;
+      }
     } else {
       console.log('✅ Build already exists, skipping...');
     }
     
     // Debug: Show what's in dist
     console.log('🔍 Debugging build output...');
-    await execPromise('npm run debug:build');
+    try {
+      const debugOutput = await execPromise('npm run debug:build');
+      console.log('Debug output:', debugOutput.stdout);
+    } catch (debugError) {
+      console.log('Debug script error:', debugError.message);
+    }
+    
+    // Manual check of dist directory
+    console.log('🔍 Manual check of dist directory...');
+    if (fs.existsSync(distPath)) {
+      console.log('✅ dist directory exists');
+      const distContents = fs.readdirSync(distPath);
+      console.log('📋 dist contents:', distContents);
+      
+      if (fs.existsSync(mainJsPath)) {
+        const stats = fs.statSync(mainJsPath);
+        console.log('✅ main.js exists, size:', stats.size, 'bytes');
+      } else {
+        console.log('❌ main.js does not exist in dist');
+      }
+    } else {
+      console.log('❌ dist directory does not exist');
+    }
     
     console.log('🚀 Starting production server...');
     // Start the application with absolute path
