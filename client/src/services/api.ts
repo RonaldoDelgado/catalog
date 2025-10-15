@@ -111,13 +111,27 @@ class ApiClient {
   private axiosInstance: AxiosInstance;
 
   constructor(baseURL: string) {
+    console.log('🔧 Initializing API client with baseURL:', baseURL);
     this.axiosInstance = axios.create({
       baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
       timeout: 10000, // 10 seconds timeout
+      withCredentials: true, // Include credentials for CORS
     });
+
+    // Request interceptor for logging
+    this.axiosInstance.interceptors.request.use(
+      (config) => {
+        console.log(`🌐 ${config.method?.toUpperCase()} ${config.url}`, config.data);
+        return config;
+      },
+      (error) => {
+        console.error('Request interceptor error:', error);
+        return Promise.reject(error);
+      }
+    );
 
     // Response interceptor to handle the API response format
     this.axiosInstance.interceptors.response.use(

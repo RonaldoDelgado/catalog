@@ -24,11 +24,21 @@ async function bootstrap() {
   // Global response interceptor
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // CORS configuration
+  // CORS configuration - Permissive for Railway deployment
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+    origin: true, // Allow all origins temporarily for debugging
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-api-key',
+      'Accept',
+      'Origin',
+      'X-Requested-With',
+    ],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Global prefix
@@ -40,4 +50,5 @@ async function bootstrap() {
   logger.log(`🚀 Application is running on: http://localhost:${port}/api/v1`);
   logger.log(`📊 Health check: http://localhost:${port}/api/v1/health`);
 }
-bootstrap();
+
+void bootstrap();

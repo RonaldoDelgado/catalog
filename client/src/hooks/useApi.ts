@@ -143,14 +143,16 @@ export function useApi() {
   // List price operations
   const createListPrice = async (listPriceData: CreateListPriceDto): Promise<ListPrice> => {
     try {
+      console.log('🔄 Creating list price...', listPriceData);
       const newListPrice = await apiClient.createListPrice(listPriceData);
+      console.log('✅ List price created successfully:', newListPrice);
       setState(prev => ({
         ...prev,
         listPrices: [...prev.listPrices, newListPrice],
       }));
       return newListPrice;
     } catch (error) {
-      console.error('Error creating list price:', error);
+      console.error('❌ Error creating list price:', error);
       throw error;
     }
   };
