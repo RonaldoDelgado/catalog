@@ -12,7 +12,7 @@ async function startWithBuild() {
     
     // Check if dist directory exists and has main.js
     const distPath = path.join(__dirname, '..', 'dist');
-    const mainJsPath = path.join(distPath, 'main.js');
+    const mainJsPath = path.join(distPath, 'src', 'main.js'); // NestJS builds to dist/src/
     
     if (!fs.existsSync(mainJsPath)) {
       console.log('📦 Building application...');
@@ -51,17 +51,17 @@ async function startWithBuild() {
       
       if (fs.existsSync(mainJsPath)) {
         const stats = fs.statSync(mainJsPath);
-        console.log('✅ main.js exists, size:', stats.size, 'bytes');
+        console.log('✅ main.js exists at dist/src/main.js, size:', stats.size, 'bytes');
       } else {
-        console.log('❌ main.js does not exist in dist');
+        console.log('❌ main.js does not exist in dist/src');
       }
     } else {
       console.log('❌ dist directory does not exist');
     }
     
     console.log('🚀 Starting production server...');
-    // Start the application with absolute path
-    const mainPath = path.join(__dirname, '..', 'dist', 'main.js');
+    // Start the application with absolute path (NestJS builds to dist/src/)
+    const mainPath = path.join(__dirname, '..', 'dist', 'src', 'main.js');
     console.log('📍 Looking for main.js at:', mainPath);
     require(mainPath);
     
@@ -73,7 +73,7 @@ async function startWithBuild() {
     try {
       await execPromise('npm run build');
       console.log('✅ Retry build completed');
-      const mainPath = path.join(__dirname, '..', 'dist', 'main.js');
+      const mainPath = path.join(__dirname, '..', 'dist', 'src', 'main.js');
       console.log('📍 Retry: Looking for main.js at:', mainPath);
       require(mainPath);
     } catch (retryError) {
