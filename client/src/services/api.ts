@@ -14,13 +14,8 @@ export interface Product {
   upcCode: string;
   description?: string;
   imageUrl?: string;
-  dimensions?: {
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-    unit?: string;
-  };
+  dimensions?: string;
+  otherExpectations?: string;
   priceXLists?: PriceXList[];
   createdAt: string;
   updatedAt: string;
@@ -53,13 +48,8 @@ export interface CreateProductDto {
   upcCode: string;
   description?: string;
   imageUrl?: string;
-  dimensions?: {
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-    unit?: string;
-  };
+  dimensions?: string;
+  otherExpectations?: string;
 }
 
 export type UpdateProductDto = Partial<CreateProductDto>;
@@ -98,6 +88,17 @@ export interface CreateCatalogSettingsDto {
 }
 
 export type UpdateCatalogSettingsDto = Partial<CreateCatalogSettingsDto>;
+
+export interface ImportResult {
+  success: boolean;
+  created: number;
+  errors: string[];
+  details: {
+    productId?: string;
+    title: string;
+    error?: string;
+  }[];
+}
 
 export interface ApiResponse<T> {
   data: T;
@@ -189,6 +190,11 @@ class ApiClient {
 
   async deleteProduct(id: string): Promise<void> {
     await this.axiosInstance.delete(`/products/${id}`);
+  }
+
+  async importProducts(csvData: string): Promise<ImportResult> {
+    const response = await this.axiosInstance.post('/products/import', { csvData });
+    return response.data;
   }
 
   // List Prices API

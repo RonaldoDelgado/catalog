@@ -161,7 +161,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
           </div>
 
           {/* Price List Info */}
-          {activeListPrice && (
+          {/* {activeListPrice && (
             <div className="mb-4 p-3 bg-blue-50 rounded-md">
               <p className="text-sm text-blue-800">
                 <strong>Active Price List:</strong> {activeListPrice.title}
@@ -170,7 +170,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                 {activeListPrice.description}
               </p>
             </div>
-          )}
+          )} */}
 
           {/* Loading State */}
           {isLoading && (
@@ -223,6 +223,9 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Dimensions
                         </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Other Expectations
+                        </th>
                         {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th> */}
@@ -267,11 +270,12 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">
-                              {product.dimensions ? (
-                                `${product.dimensions.height || 'N/A'} × ${product.dimensions.width || 'N/A'} × ${product.dimensions.length || 'N/A'} ${product.dimensions.unit || 'cm'}`
-                              ) : (
-                                'No dimensions'
-                              )}
+                              {product.dimensions || 'No dimensions'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {product.otherExpectations || 'N/A'}
                             </div>
                           </td>
                           {/* <td className="px-6 py-4 whitespace-nowrap">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useApiContext } from '@/context/ApiContext';
 import { Product, formatPrice, CreateProductDto, DEFAULT_PRODUCT_IMAGE } from '@/services/api';
 import QRCode from '@/components/common/QRCode';
+import ProductImport from './ProductImport';
 import Image from 'next/image';
 
 export default function ProductManager() {
@@ -21,6 +22,7 @@ export default function ProductManager() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState<CreateProductDto>({
@@ -29,13 +31,8 @@ export default function ProductManager() {
     upcCode: '',
     description: '',
     imageUrl: '',
-    dimensions: { 
-      length: 0, 
-      width: 0, 
-      height: 0, 
-      weight: 0, 
-      unit: 'cm' 
-    },
+    dimensions: '',
+    otherExpectations: '',
   });
   
   const [productPrices, setProductPrices] = useState<{ [listPriceId: string]: number }>({});
@@ -56,13 +53,8 @@ export default function ProductManager() {
       upcCode: '',
       description: '',
       imageUrl: '',
-      dimensions: { 
-        length: 0, 
-        width: 0, 
-        height: 0, 
-        weight: 0, 
-        unit: 'cm' 
-      },
+      dimensions: '',
+      otherExpectations: '',
     });
     const initialPrices: { [listPriceId: string]: number } = {};
     listPrices.forEach(list => {
@@ -136,13 +128,8 @@ export default function ProductManager() {
       upcCode: product.upcCode,
       description: product.description || '',
       imageUrl: product.imageUrl || '',
-      dimensions: product.dimensions || {
-        length: 0,
-        width: 0,
-        height: 0,
-        weight: 0,
-        unit: 'cm'
-      },
+      dimensions: product.dimensions || '',
+      otherExpectations: product.otherExpectations || '',
     });
     
     // Load existing prices
@@ -173,6 +160,11 @@ export default function ProductManager() {
     setIsModalOpen(true);
   };
 
+  const handleImportComplete = () => {
+    // Refresh products list after import
+    window.location.reload();
+  };
+
   const getProductPrice = (product: Product, listPriceId: string): string => {
     const priceEntry = priceXLists.find(p => 
       p.productId === product.id && p.listPriceId === listPriceId
@@ -191,12 +183,23 @@ export default function ProductManager() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-        <button
-          onClick={handleCreateNew}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-        >
-          Create New Product
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <span>Import CSV</span>
+          </button>
+          <button
+            onClick={handleCreateNew}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            Create New Product
+          </button>
+        </div>
       </div>
 
       {/* Loading State */}
@@ -404,90 +407,36 @@ export default function ProductManager() {
                     </div>
                   </div>
 
-                  {/* Dimensions and Prices */}
+                  {/* Dimensions and Other Expectations */}
                   <div className="space-y-4">
-                    <h4 className="text-md font-medium text-gray-700">Dimensions</h4>
+                    <h4 className="text-md font-medium text-gray-700">Additional Information</h4>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="length" className="block text-sm font-medium text-gray-700">
-                          Length (cm)
-                        </label>
-                        <input
-                          type="number"
-                          id="length"
-                          step="0.1"
-                          value={formData.dimensions?.length || 0}
-                          onChange={(e) => setFormData({ 
-                            ...formData, 
-                            dimensions: { 
-                              ...formData.dimensions!, 
-                              length: parseFloat(e.target.value) || 0 
-                            } 
-                          })}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border"
-                        />
-                      </div>
+                    <div>
+                      <label htmlFor="dimensions" className="block text-sm font-medium text-gray-700">
+                        Dimensions
+                      </label>
+                      <input
+                        type="text"
+                        id="dimensions"
+                        value={formData.dimensions || ''}
+                        onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border"
+                        placeholder="e.g., 10 x 5 x 3 cm, 2 kg"
+                      />
+                    </div>
 
-                      <div>
-                        <label htmlFor="width" className="block text-sm font-medium text-gray-700">
-                          Width (cm)
-                        </label>
-                        <input
-                          type="number"
-                          id="width"
-                          step="0.1"
-                          value={formData.dimensions?.width || 0}
-                          onChange={(e) => setFormData({ 
-                            ...formData, 
-                            dimensions: { 
-                              ...formData.dimensions!, 
-                              width: parseFloat(e.target.value) || 0 
-                            } 
-                          })}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="height" className="block text-sm font-medium text-gray-700">
-                          Height (cm)
-                        </label>
-                        <input
-                          type="number"
-                          id="height"
-                          step="0.1"
-                          value={formData.dimensions?.height || 0}
-                          onChange={(e) => setFormData({ 
-                            ...formData, 
-                            dimensions: { 
-                              ...formData.dimensions!, 
-                              height: parseFloat(e.target.value) || 0 
-                            } 
-                          })}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="weight" className="block text-sm font-medium text-gray-700">
-                          Weight (kg)
-                        </label>
-                        <input
-                          type="number"
-                          id="weight"
-                          step="0.01"
-                          value={formData.dimensions?.weight || 0}
-                          onChange={(e) => setFormData({ 
-                            ...formData, 
-                            dimensions: { 
-                              ...formData.dimensions!, 
-                              weight: parseFloat(e.target.value) || 0 
-                            } 
-                          })}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border"
-                        />
-                      </div>
+                    <div>
+                      <label htmlFor="otherExpectations" className="block text-sm font-medium text-gray-700">
+                        Other Expectations
+                      </label>
+                      <textarea
+                        id="otherExpectations"
+                        rows={3}
+                        value={formData.otherExpectations || ''}
+                        onChange={(e) => setFormData({ ...formData, otherExpectations: e.target.value })}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border"
+                        placeholder="Additional expectations or specifications..."
+                      />
                     </div>
 
                     {/* Prices Section */}
@@ -591,10 +540,14 @@ export default function ProductManager() {
                 {viewingProduct.dimensions && (
                   <div>
                     <h5 className="font-medium text-gray-700">Dimensions</h5>
-                    <p className="text-gray-600">
-                      {viewingProduct.dimensions.length} × {viewingProduct.dimensions.width} × {viewingProduct.dimensions.height} cm
-                      {viewingProduct.dimensions.weight && `, ${viewingProduct.dimensions.weight} kg`}
-                    </p>
+                    <p className="text-gray-600">{viewingProduct.dimensions}</p>
+                  </div>
+                )}
+
+                {viewingProduct.otherExpectations && (
+                  <div>
+                    <h5 className="font-medium text-gray-700">Other Expectations</h5>
+                    <p className="text-gray-600">{viewingProduct.otherExpectations}</p>
                   </div>
                 )}
 
@@ -637,6 +590,13 @@ export default function ProductManager() {
           </div>
         </div>
       )}
+            aaaaaaaaaaaaaaaa
+      {/* Import Modal */}
+      <ProductImport
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportComplete={handleImportComplete}
+      />
     </div>
   );
 }

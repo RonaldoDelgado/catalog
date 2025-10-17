@@ -28,14 +28,11 @@ export class Product {
   @Column({ type: 'varchar', length: 500, nullable: true, name: 'image_url' })
   imageUrl: string;
 
-  @Column({ type: 'jsonb', nullable: true })
-  dimensions: {
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-    unit?: string;
-  };
+  @Column({ type: 'text', nullable: true })
+  dimensions: string;
+
+  @Column({ type: 'text', nullable: true, name: 'other_expectations' })
+  otherExpectations: string;
 
   @OneToMany(() => PriceXList, (priceXList) => priceXList.product)
   priceXLists: PriceXList[];

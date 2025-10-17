@@ -15,6 +15,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ImportProductsDto } from './dto/import-products.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -24,6 +25,12 @@ export class ProductsController {
   @HttpCode(HttpStatus.CREATED)
   create(@Body(ValidationPipe) createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
+  }
+
+  @Post('import')
+  @HttpCode(HttpStatus.OK)
+  importFromCSV(@Body(ValidationPipe) importData: ImportProductsDto) {
+    return this.productsService.importFromCSV(importData.csvData);
   }
 
   @Get()
