@@ -87,11 +87,20 @@ export default function ProductImport({ isOpen, onClose, onImportComplete }: Pro
     // Parse data rows
     const products: ParsedProduct[] = [];
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split('\t').map(v => v.trim());
+      const line = lines[i].trim();
+      if (!line) {
+        console.log(`⏭️ Skipping empty line ${i + 1}`);
+        continue; // Skip empty lines
+      }
+      
+      const values = line.split('\t').map(v => v.trim());
       
       if (values.length === 0 || values.every(v => !v)) {
+        console.log(`⏭️ Skipping empty row ${i + 1}`);
         continue; // Skip empty rows
       }
+
+      console.log(`📝 Parsing row ${i + 1}:`, values);
 
       const prices: { [listName: string]: number } = {};
       priceColumns.forEach(priceCol => {
@@ -101,7 +110,7 @@ export default function ProductImport({ isOpen, onClose, onImportComplete }: Pro
         }
       });
 
-      products.push({
+      const product = {
         title: values[columnIndexes.title] || '',
         code: values[columnIndexes.code] || '',
         description: values[columnIndexes.description] || '',
@@ -110,7 +119,25 @@ export default function ProductImport({ isOpen, onClose, onImportComplete }: Pro
         otherExpectations: values[columnIndexes.otherExpectations] || '',
         upcCode: values[columnIndexes.upcCode] || '',
         prices
+      };
+
+      // Validate required fields
+      if (!product.title || !product.code || !product.upcCode) {
+        console.warn(`⚠️ Row ${i + 1} missing required fields:`, {
+          title: product.title,
+          code: product.code,
+          upcCode: product.upcCode
+        });
+      }
+
+      console.log(`✅ Product ${i} parsed:`, {
+        title: product.title,
+        code: product.code,
+        upcCode: product.upcCode,
+        priceCount: Object.keys(product.prices).length
       });
+
+      products.push(product);
     }
 
     return products;
@@ -124,18 +151,39 @@ export default function ProductImport({ isOpen, onClose, onImportComplete }: Pro
 
     setIsUploading(true);
     try {
+      console.log('🚀 Starting import process...');
+      console.log('📄 Selected file:', selectedFile.name, 'Size:', selectedFile.size, 'bytes');
+      
       // Read file content
       const fileContent = await readFileContent(selectedFile);
+      console.log('📖 File content read successfully, length:', fileContent.length);
+      console.log('📋 Parsed data preview:', parsedData.length, 'products found');
+      
+      // Log the products that will be sent
+      parsedData.forEach((product, index) => {
+        console.log(`Product ${index + 1}:`, {
+          title: product.title,
+          code: product.code,
+          upcCode: product.upcCode,
+          prices: Object.keys(product.prices).length
+        });
+      });
       
       // Send to API
+      console.log('📡 Sending to API...');
       const result = await apiClient.importProducts(fileContent);
+      console.log('📊 Import result:', result);
+      
       setImportResult(result);
       
       if (result.success) {
+        console.log('✅ Import completed successfully');
         onImportComplete();
+      } else {
+        console.log('❌ Import failed with errors:', result.errors);
       }
     } catch (error) {
-      console.error('Import error:', error);
+      console.error('💥 Import error:', error);
       alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsUploading(false);

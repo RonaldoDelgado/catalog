@@ -71,7 +71,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
             <div className="flex items-center space-x-4">
               <Image
                 className="h-8 w-8"
-                src="/default-product.svg"
+                src="/default-product.png"
                 alt="Company Logo"
                 width={32}
                 height={32}
@@ -100,7 +100,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
             <div className="max-w-2xl">
               <label
                 htmlFor="search"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-black mb-2"
               >
                 Search Products
               </label>
@@ -112,7 +112,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                     placeholder="Search by title, code, or UPC..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border text-gray-900 bg-white font-medium placeholder-gray-400"
+                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-3 py-2 border text-black bg-white font-medium placeholder-black"
                   />
                 </div>
                 <button
@@ -175,7 +175,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
           {/* Loading State */}
           {isLoading && (
             <div className="mb-4 p-3 bg-gray-50 rounded-md">
-              <p className="text-sm text-gray-600">Loading products...</p>
+              <p className="text-sm text-black">Loading products...</p>
             </div>
           )}
 
@@ -189,17 +189,17 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
           {isCatalogVisible ? (
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
               <div className="px-4 py-5 sm:p-6">
-                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                <h2 className="text-lg leading-6 font-medium text-black">
                   Products
                 </h2>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                <p className="mt-1 max-w-2xl text-sm text-black">
                   Browse our complete product catalog
                 </p>
               </div>
 
               {filteredProducts.length === 0 ? (
                 <div className="px-6 py-8 text-center">
-                  <p className="text-gray-500">
+                  <p className="text-black">
                     {searchTerm
                       ? "No products found matching your search."
                       : "No products available."}
@@ -210,23 +210,23 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                           Product
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                           Code
                         </th>
                         
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                           Price
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                           Dimensions
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                           Other Expectations
                         </th>
-                        {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {/* <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                           Actions
                         </th> */}
                       </tr>
@@ -238,7 +238,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                             <div className="flex items-center">
                               <Image
                                 className="h-16 w-16 rounded object-cover border"
-                                src={product?.imageUrl || DEFAULT_PRODUCT_IMAGE}
+                                src={ DEFAULT_PRODUCT_IMAGE}
                                 alt={product.title}
                                 width={64}
                                 height={64}
@@ -248,17 +248,17 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                                 }}
                               />
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-black">
                                   {product.title}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-black">
                                   {product.description?.substring(0, 50)}...
                                 </div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900 font-mono">
+                            <div className="text-sm text-black font-mono">
                               {product.code}
                             </div>
                           </td>
@@ -269,12 +269,12 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
+                            <div className="text-sm text-black">
                               {product.dimensions || 'No dimensions'}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
+                            <div className="text-sm text-black">
                               {product.otherExpectations || 'N/A'}
                             </div>
                           </td>
@@ -295,7 +295,7 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
             </div>
           ) : (
             <div className="bg-white shadow rounded-md p-8 text-center">
-              <p className="text-gray-500">
+              <p className="text-black">
                 Product catalog is currently disabled by the administrator.
               </p>
             </div>

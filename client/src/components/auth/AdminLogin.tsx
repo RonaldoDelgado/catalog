@@ -13,33 +13,30 @@ export default function AdminLogin() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === ADMIN_PASSWORD) {
+    
       setAuthenticated(true);
       setError('');
-    } else {
-      setError('Invalid password');
-      setPassword('');
-    }
+   
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-black">
             Admin Access
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-black">
             Enter the admin password to continue
           </p>
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-800 text-center">
-              <strong>Development Mode:</strong> Password is <code className="bg-blue-100 px-1 py-0.5 rounded font-mono">Pasword2026*-</code>
+              <strong>Log in to the admin panel</strong>
             </p>
           </div>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div>
+          {/* <div>
             <label htmlFor="password" className="sr-only">
               Password
             </label>
@@ -48,16 +45,16 @@ export default function AdminLogin() {
               name="password"
               type="password"
               required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-gray-900 bg-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm font-medium"
+              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-black text-black bg-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm font-medium"
               placeholder="Enter admin password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-          </div>
+          </div> */}
 
-          {error && (
+          {/* {error && (
             <div className="text-red-600 text-sm text-center">{error}</div>
-          )}
+          )} */}
 
           <div>
             <button
