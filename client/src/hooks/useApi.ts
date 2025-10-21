@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import getConfig from 'next/config';
 import { 
   apiClient, 
   Product, 
@@ -17,8 +18,57 @@ import {
   getProductPrice 
 } from '@/services/api';
 
-// Get the API base URL for logging
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+// Get the API base URL with better fallback detection
+const getApiBaseUrl = () => {
+  // Try multiple sources for the API URL
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  // Try Next.js runtime config
+  let configUrl: string | undefined;
+  try {
+    const { publicRuntimeConfig } = getConfig() || {};
+    configUrl = publicRuntimeConfig?.NEXT_PUBLIC_API_URL;
+  } catch (error) {
+    // getConfig might not be available in all contexts
+    console.log('getConfig not available:', error);
+  }
+  
+  // Log for debugging
+  console.log('🔍 Environment variables:', {
+    NEXT_PUBLIC_API_URL: envUrl,
+    configUrl,
+    NODE_ENV: process.env.NODE_ENV,
+    all_env: Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_'))
+  });
+  
+  // If we have the env var, use it
+  if (envUrl) {
+    console.log('✅ Using API URL from environment:', envUrl);
+    return envUrl;
+  }
+  
+  // Try config URL
+  if (configUrl) {
+    console.log('✅ Using API URL from config:', configUrl);
+    return configUrl;
+  }
+  
+  // Production fallback - try to detect Railway backend URL
+  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
+    // Try to construct the backend URL based on the frontend URL
+    const frontendUrl = window.location.origin;
+    const backendUrl = frontendUrl.replace('-client', '-server').replace('/api/v1', '') + '/api/v1';
+    console.log('🔄 Attempting Railway backend URL:', backendUrl);
+    return backendUrl;
+  }
+  
+  // Development fallback
+  const fallbackUrl = 'http://localhost:3001/api/v1';
+  console.log('⚠️ Using fallback URL:', fallbackUrl);
+  return fallbackUrl;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface UseApiState {
   products: Product[];

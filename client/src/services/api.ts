@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
+import ENV from '@/config/env';
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_BASE_URL = ENV.API_URL;
 
 // Default product image
 export const DEFAULT_PRODUCT_IMAGE = '/default.imagen-product.png';
