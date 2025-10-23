@@ -42,23 +42,34 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
   };
 
   const handleQRScan = async (scannedCode: string) => {
+    console.log('🔍 QR Scan received in ProductCatalog:', scannedCode);
+    
     try {
       // Buscar el producto por UPC usando la API
+      console.log('📡 Searching products with code:', scannedCode);
       const searchResults = await searchProducts(scannedCode);
+      console.log('📊 Search results:', searchResults);
+      
       const foundProduct = searchResults.find(
         (product) => product.upcCode === scannedCode
       );
+      console.log('🎯 Found product:', foundProduct);
 
       if (foundProduct) {
         // Si encuentra el producto, establecer el término de búsqueda para mostrarlo
+        console.log('✅ Product found, setting search term');
         setSearchTerm(scannedCode);
+        setIsQRScannerOpen(false);
       } else {
         // Si no encuentra el producto, mostrar alerta
-        alert(`No se encontró ningún producto con el código UPC: ${scannedCode}`);
+        console.log('❌ Product not found');
+        alert(`No se encontró ningún producto con el código: ${scannedCode}`);
+        setIsQRScannerOpen(false);
       }
     } catch (error) {
-      console.error('Error searching for product:', error);
+      console.error('💥 Error searching for product:', error);
       alert('Error al buscar el producto. Por favor, intente de nuevo.');
+      setIsQRScannerOpen(false);
     }
   };
 
@@ -69,13 +80,13 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
-              <Image
+              {/* <Image
                 className="h-8 w-8"
                 src="/default-product.png"
                 alt="Company Logo"
                 width={32}
                 height={32}
-              />
+              /> */}
               <h1 className="text-2xl font-bold text-gray-900">
                 Product Catalog
               </h1>

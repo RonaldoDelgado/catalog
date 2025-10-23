@@ -22,11 +22,19 @@ export default function QRScanner({ onScan, onClose, isOpen }: QRScannerProps) {
     if (result && result.length > 0) {
       const scannedText = result[0]?.rawValue || result[0]?.text || '';
       
-      // Validar que sea un UPC válido (11-12 dígitos)
-      const cleanText = scannedText.replace(/[^\d]/g, '');
-      if (/^\d{11,12}$/.test(cleanText)) {
+      console.log('🔍 QR Scanned:', scannedText);
+      
+      // Validar que sea un código válido (permitir códigos de 6-14 dígitos)
+      const cleanText = scannedText.trim();
+      
+      // Aceptar códigos numéricos de 6-14 dígitos o códigos alfanuméricos
+      if (/^\d{6,14}$/.test(cleanText) || /^[A-Za-z0-9]{6,20}$/.test(cleanText)) {
+        console.log('✅ Valid code detected:', cleanText);
         onScan(cleanText);
         onClose();
+      } else {
+        console.log('❌ Invalid code format:', cleanText);
+        alert(`Código no válido: ${cleanText}. Debe ser un código de producto válido.`);
       }
     }
   };
@@ -47,14 +55,15 @@ export default function QRScanner({ onScan, onClose, isOpen }: QRScannerProps) {
   };
 
   const handleManualInput = () => {
-    const input = prompt('Ingresa el código UPC manualmente:');
+    const input = prompt('Ingresa el código del producto manualmente:');
     if (input && input.trim()) {
-      const cleanInput = input.trim().replace(/[^\d]/g, '');
-      if (/^\d{11,12}$/.test(cleanInput)) {
+      const cleanInput = input.trim();
+      if (/^\d{6,14}$/.test(cleanInput) || /^[A-Za-z0-9]{6,20}$/.test(cleanInput)) {
+        console.log('📝 Manual input:', cleanInput);
         onScan(cleanInput);
         onClose();
       } else {
-        alert('Por favor ingresa un código UPC válido (11-12 dígitos)');
+        alert('Por favor ingresa un código válido (6-20 caracteres alfanuméricos)');
       }
     }
   };
