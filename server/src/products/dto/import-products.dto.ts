@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsObject } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsObject } from 'class-validator';
 
 export class ImportProductRowDto {
   @IsString()
@@ -43,10 +43,12 @@ export class ImportProductsDto {
 export interface ImportResult {
   success: boolean;
   created: number;
+  updated: number;
   errors: string[];
   details: {
     productId?: string;
     title: string;
     error?: string;
+    action?: 'created' | 'updated';
   }[];
 }

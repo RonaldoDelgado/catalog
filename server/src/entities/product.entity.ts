@@ -23,16 +23,16 @@ export class Product {
   upcCode: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description?: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true, name: 'image_url' })
-  imageUrl: string;
+  imageUrl?: string;
 
   @Column({ type: 'text', nullable: true })
-  dimensions: string;
+  dimensions?: string;
 
   @Column({ type: 'text', nullable: true, name: 'other_expectations' })
-  otherExpectations: string;
+  otherExpectations?: string;
 
   @OneToMany(() => PriceXList, (priceXList) => priceXList.product)
   priceXLists: PriceXList[];

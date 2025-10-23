@@ -84,7 +84,10 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     const product = await this.findOne(id);
 
     try {
@@ -121,6 +124,7 @@ export class ProductsService {
     const result: ImportResult = {
       success: false,
       created: 0,
+      updated: 0,
       errors: [],
       details: [],
     };
@@ -129,27 +133,43 @@ export class ProductsService {
       // Parse CSV data
       const lines = csvData.trim().split('\n');
       if (lines.length < 2) {
-        throw new BadRequestException('CSV file must have at least a header and one data row');
+        throw new BadRequestException(
+          'CSV file must have at least a header and one data row',
+        );
       }
 
       // Parse header to identify columns
-      const headers = lines[0].split('\t').map(h => h.trim());
-      
+      const headers = lines[0].split('\t').map((h) => h.trim());
+
       // Find basic product columns
-      const basicColumns = ['title', 'code', 'description', 'imageUrl', 'dimensions', 'otherExpectations', 'upcCode'];
+      const basicColumns = [
+        'title',
+        'code',
+        'description',
+        'imageUrl',
+        'dimensions',
+        'otherExpectations',
+        'upcCode',
+      ];
       const columnIndexes: { [key: string]: number } = {};
-      
-      basicColumns.forEach(col => {
-        const index = headers.findIndex(h => h.toLowerCase() === col.toLowerCase());
-        if (index !== -1) {
-          columnIndexes[col] = index;
+
+      basicColumns.forEach((col) => {
+        const columnIndex = headers.findIndex(
+          (h) => h.toLowerCase() === col.toLowerCase(),
+        );
+        if (columnIndex !== -1) {
+          columnIndexes[col] = columnIndex;
         }
       });
 
       // Identify price list columns (everything after basic columns)
       const priceColumns: { name: string; index: number }[] = [];
       headers.forEach((header, index) => {
-        if (!basicColumns.some(col => col.toLowerCase() === header.toLowerCase())) {
+        if (
+          !basicColumns.some(
+            (col) => col.toLowerCase() === header.toLowerCase(),
+          )
+        ) {
           priceColumns.push({ name: header, index });
         }
       });
@@ -157,24 +177,37 @@ export class ProductsService {
       // Get existing list prices to match with CSV columns
       const listPrices = await this.listPriceRepository.find();
       const listPriceMap = new Map<string, ListPrice>();
-      listPrices.forEach(lp => {
+      listPrices.forEach((lp) => {
         listPriceMap.set(lp.title.toLowerCase(), lp);
       });
 
       // Log available price lists for debugging
-      console.log('Available price lists:', listPrices.map(lp => lp.title));
-      console.log('Price columns found in CSV:', priceColumns.map(pc => pc.name));
+      console.log(
+        'Available price lists:',
+        listPrices.map((lp) => lp.title),
+      );
+      console.log(
+        'Price columns found in CSV:',
+        priceColumns.map((pc) => pc.name),
+      );
 
       // Process each data row
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split('\t').map(v => v.trim());
-        
-        if (values.length === 0 || values.every(v => !v)) {
+        const line = lines[i].trim();
+        if (!line) {
+          console.log(`Skipping empty line ${i + 1}`);
+          continue; // Skip empty lines
+        }
+
+        const values = line.split('\t').map((v) => v.trim());
+
+        if (values.length === 0 || values.every((v) => !v)) {
+          console.log(`Skipping empty row ${i + 1}`);
           continue; // Skip empty rows
         }
 
         console.log(`Processing row ${i + 1}:`, values);
-        
+
         try {
           // Create product data
           const productData: CreateProductDto = {
@@ -184,14 +217,23 @@ export class ProductsService {
             description: values[columnIndexes.description] || undefined,
             imageUrl: values[columnIndexes.imageUrl] || undefined,
             dimensions: values[columnIndexes.dimensions] || undefined,
-            otherExpectations: values[columnIndexes.otherExpectations] || undefined,
+            otherExpectations:
+              values[columnIndexes.otherExpectations] || undefined,
           };
 
-          console.log(`Product data for row ${i + 1}:`, productData);
+          console.log(`Product data for row ${i + 1}:`, {
+            title: productData.title,
+            code: productData.code,
+            upcCode: productData.upcCode,
+            titleLength: productData.title.length,
+            titleBytes: Buffer.from(productData.title, 'utf8').length,
+          });
 
           // Validate required fields
           if (!productData.title || !productData.code || !productData.upcCode) {
-            result.errors.push(`Row ${i + 1}: Missing required fields (title, code, or upcCode)`);
+            result.errors.push(
+              `Row ${i + 1}: Missing required fields (title, code, or upcCode)`,
+            );
             result.details.push({
               title: productData.title || 'Unknown',
               error: 'Missing required fields',
@@ -199,18 +241,58 @@ export class ProductsService {
             continue;
           }
 
-          // Create product
+          // Check if product already exists (by UPC or code)
           let product: Product;
+          // let isUpdate = false; // Variable no utilizada
+
           try {
-            product = await this.create(productData);
-            result.created++;
-            result.details.push({
-              productId: product.id,
-              title: product.title,
+            // First, try to find existing product by UPC code
+            const existingProduct = await this.productRepository.findOne({
+              where: [
+                { upcCode: productData.upcCode },
+                { code: productData.code },
+              ],
             });
+
+            if (existingProduct) {
+              // Update existing product
+              console.log(
+                `Updating existing product: ${existingProduct.title} (UPC: ${existingProduct.upcCode})`,
+              );
+
+              // Update product fields
+              existingProduct.title = productData.title;
+              existingProduct.description = productData.description;
+              existingProduct.imageUrl = productData.imageUrl;
+              existingProduct.dimensions = productData.dimensions;
+              existingProduct.otherExpectations = productData.otherExpectations;
+
+              product = await this.productRepository.save(existingProduct);
+              // isUpdate = true; // Variable no utilizada
+              result.updated++;
+
+              // Clear existing prices for this product to update them
+              await this.priceXListRepository.delete({ productId: product.id });
+
+              result.details.push({
+                productId: product.id,
+                title: product.title,
+                action: 'updated',
+              });
+            } else {
+              // Create new product
+              product = await this.create(productData);
+              result.created++;
+              result.details.push({
+                productId: product.id,
+                title: product.title,
+                action: 'created',
+              });
+            }
           } catch (createError) {
-            // Handle product creation errors (like duplicates)
-            const errorMessage = createError.message || 'Failed to create product';
+            // Handle product creation/update errors
+            const errorMessage =
+              createError.message || 'Failed to create/update product';
             result.errors.push(`Row ${i + 1}: ${errorMessage}`);
             result.details.push({
               title: productData.title,
@@ -221,7 +303,14 @@ export class ProductsService {
 
           // Create prices for this product
           for (const priceCol of priceColumns) {
-            const priceValue = parseFloat(values[priceCol.index]);
+            // Handle both comma and dot as decimal separators
+            const rawPrice = values[priceCol.index] || '';
+            const normalizedPrice = rawPrice.replace(',', '.');
+            const priceValue = parseFloat(normalizedPrice);
+
+            console.log(
+              `Processing price for ${priceCol.name}: "${rawPrice}" -> "${normalizedPrice}" -> ${priceValue}`,
+            );
             if (!isNaN(priceValue) && priceValue > 0) {
               const listPrice = listPriceMap.get(priceCol.name.toLowerCase());
               if (listPrice) {
@@ -231,15 +320,18 @@ export class ProductsService {
                     listPriceId: listPrice.id,
                     price: priceValue,
                   });
-                } catch (priceError) {
-                  result.errors.push(`Row ${i + 1}: Failed to set price for "${priceCol.name}"`);
+                } catch {
+                  result.errors.push(
+                    `Row ${i + 1}: Failed to set price for "${priceCol.name}"`,
+                  );
                 }
               } else {
-                result.errors.push(`Row ${i + 1}: Price list "${priceCol.name}" not found`);
+                result.errors.push(
+                  `Row ${i + 1}: Price list "${priceCol.name}" not found`,
+                );
               }
             }
           }
-
         } catch (error) {
           const errorMessage = error.message || 'Unknown error';
           result.errors.push(`Row ${i + 1}: ${errorMessage}`);
@@ -250,9 +342,17 @@ export class ProductsService {
         }
       }
 
-      result.success = result.created > 0;
-      return result;
+      result.success = result.created > 0 || result.updated > 0;
 
+      // Log final results
+      console.log(
+        `Import completed: ${result.created} products created, ${result.updated} products updated, ${result.errors.length} errors`,
+      );
+      if (result.errors.length > 0) {
+        console.log('Import errors:', result.errors);
+      }
+
+      return result;
     } catch (error) {
       result.errors.push(`General error: ${error.message}`);
       return result;

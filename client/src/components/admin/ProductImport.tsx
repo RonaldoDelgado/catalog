@@ -9,6 +9,7 @@ interface ProductImportProps {
   onImportComplete: () => void;
 }
 
+
 interface ParsedProduct {
   title: string;
   code: string;
@@ -190,15 +191,35 @@ export default function ProductImport({ isOpen, onClose, onImportComplete }: Pro
     }
   };
 
+  const fixEncodingIssues = (text: string): string => {
+    // Fix the most common encoding issue: � character
+    let fixedText = text;
+    
+    // Replace the generic replacement character with apostrophe
+    fixedText = fixedText.replace(/�/g, "'");
+    
+    // Log if any fixes were applied
+    if (fixedText !== text) {
+      console.log('🔧 Applied encoding fixes to text');
+    }
+    
+    return fixedText;
+  };
+
   const readFileContent = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const content = e.target?.result as string;
+        let content = e.target?.result as string;
+        
+        // Apply encoding fixes
+        content = fixEncodingIssues(content);
+        
+        console.log('📄 File read with encoding fixes applied');
         resolve(content);
       };
       reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsText(file);
+      reader.readAsText(file, 'UTF-8');
     });
   };
 
@@ -406,6 +427,8 @@ export default function ProductImport({ isOpen, onClose, onImportComplete }: Pro
                     </h3>
                     <div className={`mt-2 text-sm ${importResult.success ? 'text-green-700' : 'text-red-700'}`}>
                       <p>Products created: {importResult.created}</p>
+                      <p>Products updated: {importResult.updated || 0}</p>
+                      <p>Total processed: {(importResult.created || 0) + (importResult.updated || 0)}</p>
                       {importResult.errors.length > 0 && (
                         <div className="mt-2">
                           <p className="font-medium">Errors:</p>

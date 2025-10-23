@@ -93,11 +93,13 @@ export type UpdateCatalogSettingsDto = Partial<CreateCatalogSettingsDto>;
 export interface ImportResult {
   success: boolean;
   created: number;
+  updated: number;
   errors: string[];
   details: {
     productId?: string;
     title: string;
     error?: string;
+    action?: 'created' | 'updated';
   }[];
 }
 
