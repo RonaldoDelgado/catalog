@@ -217,91 +217,146 @@ export default function ProductCatalog({ onAdminClick }: ProductCatalogProps) {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                          Product
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                          Code
-                        </th>
-                        
-                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                          Price
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                          Dimensions
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                          Other Expectations
-                        </th>
-                        {/* <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                          Actions
-                        </th> */}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredProducts.map((product) => (
-                        <tr key={product.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <Image
-                                className="h-16 w-16 rounded object-cover border"
-                                src={ DEFAULT_PRODUCT_IMAGE}
-                                alt={product.title}
-                                width={64}
-                                height={64}
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = DEFAULT_PRODUCT_IMAGE;
-                                }}
-                              />
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-black">
-                                  {product.title}
-                                </div>
-                                <div className="text-sm text-black">
-                                  {product.description?.substring(0, 50)}...
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Product
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Code
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Price
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Dimensions
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Other Expectations
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filteredProducts.map((product) => (
+                          <tr key={product.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <Image
+                                  className="h-16 w-16 rounded object-cover border"
+                                  src={DEFAULT_PRODUCT_IMAGE}
+                                  alt={product.title}
+                                  width={64}
+                                  height={64}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = DEFAULT_PRODUCT_IMAGE;
+                                  }}
+                                />
+                                <div className="ml-4">
+                                  <div className="text-sm font-medium text-black">
+                                    {product.title}
+                                  </div>
+                                  <div className="text-sm text-black">
+                                    {product.description?.substring(0, 50)}...
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-black font-mono">
-                              {product.code}
-                            </div>
-                          </td>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-black font-mono">
+                                {product.code}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-semibold text-green-600">
+                                {getProductPrice(product)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-black">
+                                {product.dimensions || 'No dimensions'}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-black">
+                                {product.otherExpectations || 'N/A'}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-semibold text-green-600">
-                              {getProductPrice(product)}
+                  {/* Mobile Card View */}
+                  <div className="md:hidden space-y-4">
+                    {filteredProducts.map((product) => (
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                        <div className="flex items-start space-x-4">
+                          <Image
+                            className="h-20 w-20 rounded object-cover border flex-shrink-0"
+                            src={DEFAULT_PRODUCT_IMAGE}
+                            alt={product.title}
+                            width={80}
+                            height={80}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = DEFAULT_PRODUCT_IMAGE;
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="mb-2">
+                              <h3 className="text-sm font-medium text-black truncate">
+                                {product.title}
+                              </h3>
+                              <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                {product.description}
+                              </p>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-black">
-                              {product.dimensions || 'No dimensions'}
+                            
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs font-medium text-gray-500">Code:</span>
+                                <span className="text-xs text-black font-mono bg-gray-100 px-2 py-1 rounded">
+                                  {product.code}
+                                </span>
+                              </div>
+                              
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs font-medium text-gray-500">Price:</span>
+                                <span className="text-sm font-semibold text-green-600">
+                                  {getProductPrice(product)}
+                                </span>
+                              </div>
+                              
+                              {product.dimensions && (
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs font-medium text-gray-500">Dimensions:</span>
+                                  <span className="text-xs text-black text-right">
+                                    {product.dimensions}
+                                  </span>
+                                </div>
+                              )}
+                              
+                              {product.otherExpectations && product.otherExpectations !== 'N/A' && (
+                                <div className="mt-2">
+                                  <span className="text-xs font-medium text-gray-500">Other Expectations:</span>
+                                  <p className="text-xs text-black mt-1">
+                                    {product.otherExpectations}
+                                  </p>
+                                </div>
+                              )}
                             </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-black">
-                              {product.otherExpectations || 'N/A'}
-                            </div>
-                          </td>
-                          {/* <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              onClick={() => setViewingProduct(product)}
-                              className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors"
-                            >
-                              Ver detalles
-                            </button>
-                          </td> */}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           ) : (
