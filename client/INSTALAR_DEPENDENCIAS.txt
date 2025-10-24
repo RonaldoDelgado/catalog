@@ -1,0 +1,60 @@
+═══════════════════════════════════════════════════════════════
+  INSTRUCCIONES PARA INSTALAR DEPENDENCIAS DE QR CODES
+═══════════════════════════════════════════════════════════════
+
+📋 PASO 1: Abre una terminal en la carpeta "client"
+
+   En Windows:
+   - Abre la carpeta: C:\Users\ronal\OneDrive\Desktop\Proyectos\Trabajo\workflow_brayan\Catalogo\client
+   - Haz clic derecho en un espacio vacío
+   - Selecciona "Abrir en Terminal" o "Git Bash Here"
+
+═══════════════════════════════════════════════════════════════
+
+📦 PASO 2: Ejecuta este comando:
+
+   npm install
+
+   (Este comando instalará todas las dependencias que agregué al package.json)
+
+═══════════════════════════════════════════════════════════════
+
+🔄 PASO 3: Reinicia el servidor de desarrollo
+
+   1. Detén el servidor actual (Ctrl + C en la terminal donde está corriendo)
+   2. Vuelve a iniciarlo con: npm run dev
+
+═══════════════════════════════════════════════════════════════
+
+✅ VERIFICACIÓN
+
+   Si todo salió bien, deberías ver:
+   - El servidor corriendo sin errores
+   - El botón "Download QR Codes" (morado) en el Admin Panel
+
+═══════════════════════════════════════════════════════════════
+
+📦 Dependencias que se instalarán:
+
+   ✓ jszip (v3.10.1) - Para crear archivos ZIP
+   ✓ file-saver (v2.0.5) - Para descargar archivos
+   ✓ qrcode (v1.5.4) - Para generar códigos QR
+   ✓ @types/qrcode (v1.5.5) - Tipos de TypeScript
+   ✓ @types/file-saver (v2.0.7) - Tipos de TypeScript
+
+═══════════════════════════════════════════════════════════════
+
+❓ Si tienes problemas:
+
+   1. Limpia la caché:
+      npm cache clean --force
+
+   2. Elimina node_modules y reinstala:
+      rmdir /s /q node_modules
+      del package-lock.json
+      npm install
+
+   3. Reinicia el servidor:
+      npm run dev
+
+═══════════════════════════════════════════════════════════════
